@@ -2,16 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: monitoring-grafana
-  namespace: kube-system
-  labels: 
-    kubernetes.io/cluster-service: "true"
-    kubernetes.io/name: "Grafana"
+  namespace: kube-monitoring
+  labels:
+    name: grafana
 spec:
-  # On production clusters, consider setting up auth for grafana, and
-  # exposing Grafana either using a LoadBalancer or a public IP.
-  # type: LoadBalancer
-  ports: 
-    - port: 80
+  ports:
+    - port: 3000
       targetPort: 3000
-  selector: 
-    k8s-app: influxGrafana
+  selector:
+    name: grafana

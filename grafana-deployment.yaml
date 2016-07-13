@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: grafana-v1
+  namespace: kube-monitoring
+  labels:
+    name: grafana
+    version: v1
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: grafana
+        version: v1
+    spec:
+      containers:
+        - image: gcr.io/google_containers/heapster_grafana:v2.6.0-2
+          name: grafana
+          env:
+            - name: INFLUXDB_SERVICE_URL
+              value: http://monitoring-influxdb:8086
+              # The following env variables are required to make Grafana accessible via
+              # the kubernetes api-server proxy. On production clusters, we recommend
+              # removing these env variables, setup auth for grafana, and expose the grafana
+              # service using a LoadBalancer or a public IP.
+            - name: GF_AUTH_BASIC_ENABLED
+              value: "false"
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "true"
+            - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+              value: Admin
+            # - name: GF_SERVER_ROOT_URL
+            #   value: /api/v1/proxy/namespaces/kube-system/services/monitoring-grafana/
+          volumeMounts:
+            - mountPath: /var
+              name: grafana-storage
+      volumes:
+        - name: grafana-storage
+          emptyDir: {}

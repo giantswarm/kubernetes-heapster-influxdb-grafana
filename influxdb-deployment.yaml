@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: influxdb-v1
+  namespace: kube-monitoring
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: influxdb
+        version: v1
+    spec:
+      containers:
+        # - image: influxdb:0.13.0
+        - image: gcr.io/google_containers/heapster_influxdb:v0.5
+          name: influxdb
+          resources:
+            limits:
+              cpu: 100m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+          ports:
+            # admin-ui
+            - containerPort: 8083
+              hostPort: 8083
+            # api
+            - containerPort: 8086
+              hostPort: 8086
+      #     volumeMounts:
+      #     - name: influxdb-persistent-storage
+      #       mountPath: /var/lib/influxdb
+      # volumes:
+      # - name: influxdb-persistent-storage
+      #   emptyDir: {}
